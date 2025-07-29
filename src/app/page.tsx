@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
 
   const sendAction = async (action: string) => {
     setLoading(true);
@@ -18,7 +20,7 @@ export default function Home() {
   return (
     <main className="p-6 text-center">
       <h1 className="text-2xl font-bold mb-4">Escolha uma ação</h1>
-      <div className="flex gap-4 justify-center">
+      <div className="flex gap-4 justify-center mb-6">
         <button
           onClick={() => sendAction("Gol")}
           className="bg-green-500 text-white px-4 py-2 rounded"
@@ -38,6 +40,15 @@ export default function Home() {
           Falta
         </button>
       </div>
+
+      {/* Botão para ir para Admin */}
+      <button
+        onClick={() => router.push("/admin")}
+        className="bg-gray-800 text-white px-6 py-2 rounded"
+      >
+        Ir para Área Administrativa
+      </button>
+
       {loading && <p className="mt-4 text-gray-600">Enviando...</p>}
     </main>
   );

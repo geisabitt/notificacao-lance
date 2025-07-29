@@ -18,6 +18,9 @@ export default function AdminPage() {
       navigator.serviceWorker.register("/sw.js").then((registration) => {
         Notification.requestPermission().then((permission) => {
           if (permission === "granted") {
+            navigator.serviceWorker.register("/sw.js").then((registration) => {
+              console.log("SW registrado:", registration);
+            });
             registration.pushManager
               .subscribe({
                 userVisibleOnly: true,
