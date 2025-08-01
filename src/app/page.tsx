@@ -1,11 +1,11 @@
 "use client";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { ShieldCheck } from "lucide-react"; // Ícone de restrito
+import { useState } from "react";
+import { ShieldCheck, Goal, Zap, Ban } from "lucide-react";
 
 export default function Home() {
-  const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
 
   const sendAction = async (action: string) => {
     setLoading(true);
@@ -19,35 +19,47 @@ export default function Home() {
   };
 
   return (
-    <main className="p-6 text-center relative min-h-screen">
-      <h1 className="text-2xl font-bold mb-4">Escolha uma ação</h1>
-      <div className="flex gap-4 justify-center mb-6">
-        <button
-          onClick={() => sendAction("Gol")}
-          className="bg-green-500 text-white px-4 py-2 rounded shadow-lg"
-        >
-          Gol
-        </button>
-        <button
-          onClick={() => sendAction("Drible")}
-          className="bg-blue-500 text-white px-4 py-2 rounded shadow-lg"
-        >
-          Drible
-        </button>
-        <button
-          onClick={() => sendAction("Falta")}
-          className="bg-red-500 text-white px-4 py-2 rounded shadow-lg"
-        >
-          Falta
-        </button>
+    <main
+      className="relative min-h-screen flex flex-col items-center justify-center text-white"
+      style={{
+        background: "url(/stadium-bg.png) center/cover no-repeat",
+      }}
+    >
+      {/* Overlay escuro */}
+      <div className="absolute inset-0 bg-black/60"></div>
+
+      {/* Conteúdo */}
+      <div className="relative z-10 text-center">
+        <h1 className="text-4xl font-extrabold mb-8 tracking-wide">
+          Gol ⚽ Lances
+        </h1>
+        <div className="flex flex-col gap-6 justify-center">
+          <button
+            onClick={() => sendAction("Gol")}
+            className="flex items-center justify-center gap-4 bg-green-500 hover:bg-green-600 text-white rounded-full px-8 py-6 shadow-xl transition transform hover:scale-105 text-3xl font-bold"
+          >
+            <Goal size={48} /> Gol
+          </button>
+          <button
+            onClick={() => sendAction("Drible")}
+            className="flex items-center justify-center gap-4 bg-blue-500 hover:bg-blue-600 text-white rounded-full px-8 py-6 shadow-xl transition transform hover:scale-105 text-3xl font-bold"
+          >
+            <Zap size={48} /> Drible
+          </button>
+          <button
+            onClick={() => sendAction("Falta")}
+            className="flex items-center justify-center gap-4 bg-red-500 hover:bg-red-600 text-white rounded-full px-8 py-6 shadow-xl transition transform hover:scale-105 text-3xl font-bold"
+          >
+            <Ban size={48} /> Falta
+          </button>
+        </div>
+        {loading && <p className="mt-4 text-lg">Enviando...</p>}
       </div>
 
-      {loading && <p className="mt-4 text-gray-600">Enviando...</p>}
-
-      {/* Ícone administrativo flutuante */}
+      {/* Botão administrativo */}
       <button
         onClick={() => router.push("/admin")}
-        className="fixed bottom-4 left-4 bg-gray-800 text-white p-4 rounded-full shadow-lg hover:bg-gray-700"
+        className="fixed bottom-6 left-6 bg-gray-900 p-4 rounded-full shadow-lg hover:bg-gray-700 transition transform hover:scale-110 z-20"
         title="Área Administrativa"
       >
         <ShieldCheck size={28} />
