@@ -1,18 +1,15 @@
 import { NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
-
-type EventItem = {
-  action: string;
-  timestamp: string;
-};
-
-const events: EventItem[] = [];
+import { prisma } from "@/lib/prisma";
 
 export async function POST(request: Request) {
   const { action } = await request.json();
-  const timestamp = new Date().toISOString();
 
-  events.push({ action, timestamp });
+  const newEvent = await prisma.event.create({
+    data: {
+      action,
+    },
+  });
 
   await fetch(`${process.env.NEXT_PUBLIC_BASE_URL}/api/push/send`, {
     method: "POST",
@@ -24,9 +21,16 @@ export async function POST(request: Request) {
   });
 
   revalidatePath("/admin");
-  return NextResponse.json({ message: "Evento registrado!", events });
+
+  return NextResponse.json({ message: "Evento registrado!", event: newEvent });
 }
 
 export async function GET() {
+  const events = await prisma.event.findMany({
+    orderBy: {
+      timestamp: "desc",
+    },
+  });
+
   return NextResponse.json(events);
 }

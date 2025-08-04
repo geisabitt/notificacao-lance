@@ -1,65 +1,116 @@
 "use client";
 import { useEffect, useState } from "react";
+import { ArrowLeft, Goal, Zap, Volleyball } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 type EventItem = {
+  id: number;
   action: string;
   timestamp: string;
 };
 
 export default function AdminPage() {
+  const router = useRouter();
   const [events, setEvents] = useState<EventItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    fetch("/api/events")
-      .then((res) => res.json())
-      .then(setEvents);
+    const fetchEvents = async () => {
+      try {
+        const res = await fetch("/api/events");
+        if (!res.ok) throw new Error("Erro ao carregar eventos");
+        const data: EventItem[] = await res.json();
+        setEvents(data);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-    if ("serviceWorker" in navigator && "PushManager" in window) {
-      navigator.serviceWorker.register("/sw.js").then((registration) => {
-        Notification.requestPermission().then((permission) => {
-          if (permission === "granted") {
-            navigator.serviceWorker.register("/sw.js").then((registration) => {
-              console.log("SW registrado:", registration);
-            });
-            registration.pushManager
-              .subscribe({
-                userVisibleOnly: true,
-                applicationServerKey: urlBase64ToUint8Array(
-                  process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!
-                ),
-              })
-              .then((sub) => {
-                fetch("/api/push/subscribe", {
-                  method: "POST",
-                  headers: { "Content-Type": "application/json" },
-                  body: JSON.stringify(sub),
-                });
-              });
-          }
-        });
-      });
-    }
+    fetchEvents();
   }, []);
 
-  const urlBase64ToUint8Array = (base64String: string) => {
-    const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
-    const base64 = (base64String + padding)
-      .replace(/-/g, "+")
-      .replace(/_/g, "/");
-    const rawData = atob(base64);
-    return Uint8Array.from([...rawData].map((char) => char.charCodeAt(0)));
+  const groupedEvents = events.reduce(
+    (acc: Record<string, EventItem[]>, event) => {
+      const date = new Date(event.timestamp).toLocaleDateString("pt-BR");
+      if (!acc[date]) acc[date] = [];
+      acc[date].push(event);
+      return acc;
+    },
+    {}
+  );
+
+  const getIcon = (action: string) => {
+    switch (action) {
+      case "Gol":
+        return <Goal className="text-green-500" size={28} />;
+      case "Drible":
+        return <Zap className="text-blue-500" size={28} />;
+      case "Lencol":
+        return <Volleyball className="text-red-500" size={28} />;
+      default:
+        return null;
+    }
   };
 
+  if (loading) {
+    return (
+      <main className="min-h-screen flex items-center justify-center text-gray-600">
+        <p className="text-xl">Carregando eventos...</p>
+      </main>
+    );
+  }
+
   return (
-    <main className="p-6">
-      <h1 className="text-2xl font-bold mb-4">Admin - Eventos</h1>
-      <ul>
-        {events.map((e, i) => (
-          <li key={i}>
-            {e.action} - {new Date(e.timestamp).toLocaleString()}
-          </li>
-        ))}
-      </ul>
+    <main className="min-h-screen bg-gray-900 p-6">
+      {/* Topbar */}
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-300">
+          Área Administrativa
+        </h1>
+        <button
+          onClick={() => router.push("/")}
+          className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-300"
+        >
+          <ArrowLeft size={20} /> Voltar
+        </button>
+      </div>
+
+      {Object.keys(groupedEvents).length === 0 ? (
+        <p className="text-gray-200 text-lg">Nenhum evento registrado ainda.</p>
+      ) : (
+        Object.keys(groupedEvents)
+          .sort((a, b) => new Date(b).getTime() - new Date(a).getTime())
+          .map((date) => (
+            <div key={date} className="mb-8">
+              <h2 className="text-xl font-semibold text-gray-200 mb-4">
+                {date} ({groupedEvents[date].length} ações)
+              </h2>
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {groupedEvents[date].map((event) => (
+                  <div
+                    key={event.id}
+                    className="bg-gray-800 rounded-xl shadow-md p-4 flex items-center gap-4"
+                  >
+                    {getIcon(event.action)}
+                    <div>
+                      <p className="text-lg text-gray-300 font-bold">
+                        {event.action}
+                      </p>
+                      <p className="text-gray-400 text-sm">
+                        {new Date(event.timestamp).toLocaleTimeString("pt-BR", {
+                          hour: "2-digit",
+                          minute: "2-digit",
+                        })}
+                      </p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))
+      )}
     </main>
   );
 }

@@ -1,11 +1,16 @@
 "use client";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { ShieldCheck, Goal, Zap, Ban } from "lucide-react";
+import { ShieldCheck, Goal, Zap, Volleyball } from "lucide-react";
+import ActionModal from "@/components/ActionModal";
+import Image from "next/image";
 
 export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
+
+  const [showModal, setShowModal] = useState(false);
+  const [modalMessage, setModalMessage] = useState("");
 
   const sendAction = async (action: string) => {
     setLoading(true);
@@ -15,24 +20,35 @@ export default function Home() {
       body: JSON.stringify({ action }),
     });
     setLoading(false);
-    alert(`Ação ${action} registrada!`);
+    setModalMessage(`Ação ${action} registrada!`);
+    setShowModal(true);
   };
 
   return (
     <main
-      className="relative min-h-screen flex flex-col items-center justify-center text-white"
+      className="relative min-h-screen flex flex-col items-center justify-center text-white px-4"
       style={{
         background: "url(/stadium-bg.png) center/cover no-repeat",
       }}
     >
-      {/* Overlay escuro */}
-      <div className="absolute inset-0 bg-black/60"></div>
+      <div className="absolute inset-0"></div>
 
-      {/* Conteúdo */}
-      <div className="relative z-10 text-center">
+      <div className="relative z-10 text-center w-full max-w-md">
+        <div className="flex justify-center mb-8">
+          <Image
+            src="/logo-sitio-khalifa.png"
+            alt="Logo do Projeto"
+            width={200}
+            height={0}
+            style={{ height: "auto", maxWidth: "200px" }}
+            priority
+          />
+        </div>
+
         <h1 className="text-4xl font-extrabold mb-8 tracking-wide">
           Gol ⚽ Lances
         </h1>
+
         <div className="flex flex-col gap-6 justify-center">
           <button
             onClick={() => sendAction("Gol")}
@@ -47,12 +63,13 @@ export default function Home() {
             <Zap size={48} /> Drible
           </button>
           <button
-            onClick={() => sendAction("Falta")}
+            onClick={() => sendAction("Lencol")}
             className="flex items-center justify-center gap-4 bg-red-500 hover:bg-red-600 text-white rounded-full px-8 py-6 shadow-xl transition transform hover:scale-105 text-3xl font-bold"
           >
-            <Ban size={48} /> Falta
+            <Volleyball size={48} /> Lençol
           </button>
         </div>
+
         {loading && <p className="mt-4 text-lg">Enviando...</p>}
       </div>
 
@@ -64,6 +81,12 @@ export default function Home() {
       >
         <ShieldCheck size={28} />
       </button>
+      {showModal && (
+        <ActionModal
+          message={modalMessage}
+          onClose={() => setShowModal(false)}
+        />
+      )}
     </main>
   );
 }
