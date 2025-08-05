@@ -19,7 +19,8 @@ export async function POST(request: Request) {
       message: `${action} às ${new Date().toLocaleTimeString("pt-BR", {
         hour: "2-digit",
         minute: "2-digit",
-        hour12: false, // 🔥 Força formato 24h
+        hour12: false,
+        timeZone: "America/Sao_Paulo", // 🔥 Força horário do Brasil
       })}`,
     }),
   });
