@@ -16,7 +16,11 @@ export async function POST(request: Request) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
       title: "Novo Evento",
-      message: `${action} às ${new Date().toLocaleTimeString()}`,
+      message: `${action} às ${new Date().toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false, // 🔥 Força formato 24h
+      })}`,
     }),
   });
 
