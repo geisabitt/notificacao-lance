@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 import { ArrowLeft, Goal, Zap, Volleyball } from "lucide-react";
 import { useRouter } from "next/navigation";
+import EnableNotifications from "@/components/EnableNotifications";
 
 type EventItem = {
   id: number;
@@ -64,6 +65,7 @@ export default function AdminPage() {
 
   return (
     <main className="min-h-screen bg-gray-900 p-6">
+      <EnableNotifications />
       {/* Topbar */}
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-gray-300">
