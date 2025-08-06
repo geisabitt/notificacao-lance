@@ -1,3 +1,4 @@
+// src/app/api/push/subscribe/route.ts
 import { NextResponse } from "next/server";
 import { addSubscription } from "@/lib/subscriptions";
 

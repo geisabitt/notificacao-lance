@@ -1,3 +1,4 @@
+// src/app/admin/page.tsx
 "use client";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Goal, Zap, Volleyball } from "lucide-react";

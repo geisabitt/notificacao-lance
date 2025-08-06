@@ -1,3 +1,4 @@
+// src/lib/subscriptions.ts
 import type { PushSubscription as WebPushSubscription } from "web-push";
 
 const subscriptions: WebPushSubscription[] = [];
