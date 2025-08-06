@@ -25,3 +25,11 @@ model User {
   role      String   @default("user")
   createdAt DateTime @default(now())
 }
+
+model NotificationSubscription {
+  id        Int      @id @default(autoincrement())
+  endpoint  String   @unique
+  p256dh    String
+  auth      String
+  createdAt DateTime @default(now())
+}
