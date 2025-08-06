@@ -20,7 +20,7 @@ export async function POST(request: Request) {
         hour: "2-digit",
         minute: "2-digit",
         hour12: false,
-        timeZone: "America/Sao_Paulo", // 🔥 Força horário do Brasil
+        timeZone: "America/Sao_Paulo",
       })}`,
     }),
   });

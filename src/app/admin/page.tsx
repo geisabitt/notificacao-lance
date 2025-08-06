@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ArrowLeft, Goal, Zap, Volleyball } from "lucide-react";
 import { useRouter } from "next/navigation";
 import EnableNotifications from "@/components/EnableNotifications";
+import LogoutButton from "@/components/LogoutButton";
 
 type EventItem = {
   id: number;
@@ -16,6 +17,16 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // ✅ Verificação do token
+    const checkAuth = async () => {
+      const res = await fetch("/api/auth/check", { credentials: "include" });
+      if (res.status === 401) {
+        router.push("/login");
+      }
+    };
+
+    checkAuth();
+
     const fetchEvents = async () => {
       try {
         const res = await fetch("/api/events");
@@ -30,7 +41,7 @@ export default function AdminPage() {
     };
 
     fetchEvents();
-  }, []);
+  }, [router]);
 
   const groupedEvents = events.reduce(
     (acc: Record<string, EventItem[]>, event) => {
@@ -65,18 +76,21 @@ export default function AdminPage() {
 
   return (
     <main className="min-h-screen bg-gray-900 p-6">
-      <EnableNotifications />
       {/* Topbar */}
-      <div className="flex items-center justify-between mb-6">
+      <div className="flex flex-col gap-6 items-center mb-6">
+        <EnableNotifications />
         <h1 className="text-3xl font-bold text-gray-300">
           Área Administrativa
         </h1>
-        <button
-          onClick={() => router.push("/")}
-          className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-300"
-        >
-          <ArrowLeft size={20} /> Voltar
-        </button>
+        <div className="flex justify-between gap-4">
+          <LogoutButton />
+          <button
+            onClick={() => router.push("/")}
+            className="flex items-center gap-2 bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-300"
+          >
+            <ArrowLeft size={20} /> Voltar
+          </button>
+        </div>
       </div>
 
       {Object.keys(groupedEvents).length === 0 ? (
