@@ -1,6 +1,7 @@
 "use client";
+
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ShieldCheck, Goal, Zap, Volleyball } from "lucide-react";
 import ActionModal from "@/components/ActionModal";
 import Image from "next/image";
@@ -8,9 +9,20 @@ import Image from "next/image";
 export default function Home() {
   const router = useRouter();
   const [loading, setLoading] = useState(false);
-
   const [showModal, setShowModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+
+  // ✅ Registrar Service Worker (PWA)
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then(() => console.log("✅ Service Worker registrado com sucesso"))
+        .catch((err) =>
+          console.error("❌ Erro ao registrar Service Worker:", err)
+        );
+    }
+  }, []);
 
   const sendAction = async (action: string) => {
     setLoading(true);
@@ -81,6 +93,7 @@ export default function Home() {
       >
         <ShieldCheck size={28} />
       </button>
+
       {showModal && (
         <ActionModal
           message={modalMessage}
