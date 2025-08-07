@@ -33,11 +33,13 @@ export default function LoginPage() {
   useEffect(() => {
     if (loginSuccess) {
       const timer = setTimeout(() => {
-        router.push("/admin");
+        // Redirecionamento após login
+        router.replace("/admin");
       }, 3000);
+
       return () => clearTimeout(timer);
     }
-  }, [loginSuccess, router]);
+  }, [loginSuccess]);
 
   if (loginSuccess) {
     return (
@@ -50,7 +52,7 @@ export default function LoginPage() {
           <p>
             Se você não for redirecionado automaticamente,{" "}
             <button
-              onClick={() => router.push("/admin")}
+              onClick={() => router.replace("/admin")}
               className="underline text-blue-400 hover:text-blue-600"
             >
               clique aqui
