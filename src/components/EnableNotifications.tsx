@@ -1,3 +1,4 @@
+// src/components/EnableNotifications.tsx
 "use client";
 
 import { useEffect, useState } from "react";
