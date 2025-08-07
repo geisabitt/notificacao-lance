@@ -1,6 +1,6 @@
-import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 import webPush from "web-push";
-import { getSubscriptions } from "@/lib/subscriptions";
+import { NextResponse } from "next/server";
 
 webPush.setVapidDetails(
   process.env.VAPID_EMAIL!,
@@ -8,14 +8,52 @@ webPush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY!
 );
 
-export async function POST(request: Request) {
-  const body = await request.json();
-  const { title, message } = body;
+export async function POST(req: Request) {
+  try {
+    const { title, message } = await req.json();
 
-  const subs = getSubscriptions();
-  const payload = JSON.stringify({ title, body: message });
+    if (!title || !message) {
+      return NextResponse.json(
+        { error: "Título e mensagem são obrigatórios" },
+        { status: 400 }
+      );
+    }
 
-  await Promise.all(subs.map((sub) => webPush.sendNotification(sub, payload)));
+    const subs = await prisma.notificationSubscription.findMany();
+    const payload = JSON.stringify({ title, body: message });
 
-  return NextResponse.json({ success: true });
+    await Promise.all(
+      subs.map(async (sub) => {
+        const pushSub = {
+          endpoint: sub.endpoint,
+          keys: {
+            p256dh: sub.p256dh,
+            auth: sub.auth,
+          },
+        };
+
+        try {
+          await webPush.sendNotification(pushSub, payload);
+        } catch (err: unknown) {
+          if (typeof err === "object" && err && "statusCode" in err) {
+            const errorObj = err as { statusCode?: number };
+            console.error("Erro ao enviar push:", errorObj.statusCode);
+            if (errorObj.statusCode === 410 || errorObj.statusCode === 404) {
+              await prisma.notificationSubscription.delete({
+                where: { endpoint: sub.endpoint },
+              });
+              console.log("Inscrição removida:", sub.endpoint);
+            }
+          } else {
+            console.error("Erro ao enviar push:", err);
+          }
+        }
+      })
+    );
+
+    return NextResponse.json({ success: true });
+  } catch (error) {
+    console.error("Erro ao enviar notificações:", error);
+    return NextResponse.json({ error: "Erro no servidor" }, { status: 500 });
+  }
 }

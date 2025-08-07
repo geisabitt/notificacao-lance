@@ -1,3 +1,4 @@
+// src/app/admin/page.tsx
 "use client";
 import { useEffect, useState } from "react";
 import { ArrowLeft, Goal, Zap, Volleyball } from "lucide-react";
@@ -17,7 +18,6 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // ✅ Verificação do token
     const checkAuth = async () => {
       const res = await fetch("/api/auth/check", { credentials: "include" });
       if (res.status === 401) {
@@ -26,7 +26,6 @@ export default function AdminPage() {
     };
 
     checkAuth();
-
     const fetchEvents = async () => {
       try {
         const res = await fetch("/api/events");
@@ -77,12 +76,11 @@ export default function AdminPage() {
   return (
     <main className="min-h-screen bg-gray-900 p-6">
       {/* Topbar */}
-      <div className="flex flex-col gap-6 items-center mb-6">
-        <EnableNotifications />
+      <div className="flex flex-col items-center gap-4 mb-6">
         <h1 className="text-3xl font-bold text-gray-300">
           Área Administrativa
         </h1>
-        <div className="flex justify-between gap-4">
+        <div className="flex gap-4">
           <LogoutButton />
           <button
             onClick={() => router.push("/")}

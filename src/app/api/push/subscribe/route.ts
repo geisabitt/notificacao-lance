@@ -1,9 +1,10 @@
-import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
   try {
-    const { endpoint, keys } = await req.json();
+    const subscription = await req.json();
+    const { endpoint, keys } = subscription;
 
     if (!endpoint || !keys?.p256dh || !keys?.auth) {
       return NextResponse.json({ error: "Dados inválidos" }, { status: 400 });
@@ -11,7 +12,7 @@ export async function POST(req: Request) {
 
     await prisma.notificationSubscription.upsert({
       where: { endpoint },
-      update: { p256dh: keys.p256dh, auth: keys.auth },
+      update: {},
       create: {
         endpoint,
         p256dh: keys.p256dh,
@@ -19,9 +20,9 @@ export async function POST(req: Request) {
       },
     });
 
-    return NextResponse.json({ message: "Inscrição salva com sucesso" });
+    return NextResponse.json({ success: true });
   } catch (error) {
-    console.error(error);
-    return NextResponse.json({ error: "Erro interno" }, { status: 500 });
+    console.error("Erro ao salvar inscrição:", error);
+    return NextResponse.json({ error: "Erro no servidor" }, { status: 500 });
   }
 }

@@ -1,7 +1,8 @@
+// src/app/page.tsx
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import { ShieldCheck, Goal, Zap, Volleyball } from "lucide-react";
 import ActionModal from "@/components/ActionModal";
 import Image from "next/image";
@@ -35,6 +36,15 @@ export default function Home() {
     setModalMessage(`Ação ${action} registrada!`);
     setShowModal(true);
   };
+
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then(() => console.log("SW registrado"))
+        .catch((err) => console.error("Erro ao registrar SW:", err));
+    }
+  }, []);
 
   return (
     <main
