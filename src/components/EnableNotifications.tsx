@@ -1,9 +1,10 @@
 "use client";
+
 import { useEffect, useState } from "react";
 
 export default function EnableNotifications() {
-  const [permission, setPermission] =
-    useState<NotificationPermission>("default");
+  const [enabled, setEnabled] = useState(false);
+  const [status, setStatus] = useState("");
 
   useEffect(() => {
     if ("serviceWorker" in navigator && "PushManager" in window) {
@@ -38,7 +39,6 @@ export default function EnableNotifications() {
 
     console.log("Nova inscrição:", subscription);
 
-    // Salvar no backend
     await fetch("/api/push/subscribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -65,11 +65,14 @@ export default function EnableNotifications() {
   if (enabled) return null;
 
   return (
-    <button
-      onClick={enableNotifications}
-      className="bg-green-500 px-4 py-2 rounded text-white"
-    >
-      Ativar Notificações
-    </button>
+    <div className="mt-4 text-center">
+      <button
+        onClick={activateNotifications}
+        className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600"
+      >
+        Ativar Notificações
+      </button>
+      {status && <p className="text-gray-200 mt-2">{status}</p>}
+    </div>
   );
 }
