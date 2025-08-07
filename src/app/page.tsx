@@ -24,12 +24,13 @@ export default function Home() {
     setModalMessage(`Ação ${action} registrada!`);
     setShowModal(true);
   };
+
   useEffect(() => {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/sw.js")
-        .then(() => alert("SW registrado!"))
-        .catch((err) => alert("Erro ao registrar SW: " + err));
+        .then(() => console.log("SW registrado"))
+        .catch((err) => console.error("Erro ao registrar SW:", err));
     }
   }, []);
 

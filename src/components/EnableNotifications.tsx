@@ -1,4 +1,3 @@
-// EnableNotifications.tsx
 "use client";
 
 import { useEffect, useState } from "react";
@@ -8,7 +7,6 @@ export default function EnableNotifications() {
   const [status, setStatus] = useState("");
 
   useEffect(() => {
-    // Verifica se já existe uma inscrição ativa
     if ("serviceWorker" in navigator && "PushManager" in window) {
       navigator.serviceWorker.ready.then(async (sw) => {
         const subscription = await sw.pushManager.getSubscription();
@@ -39,6 +37,8 @@ export default function EnableNotifications() {
       ),
     });
 
+    console.log("Nova inscrição:", subscription);
+
     await fetch("/api/push/subscribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -49,7 +49,6 @@ export default function EnableNotifications() {
     setStatus("Notificações ativadas!");
   };
 
-  // Função para converter chave VAPID para Uint8Array
   function urlBase64ToUint8Array(base64String: string) {
     const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
     const base64 = (base64String + padding)
@@ -63,7 +62,7 @@ export default function EnableNotifications() {
     return outputArray;
   }
 
-  if (enabled) return null; // 🔥 Se já está ativo, não mostra nada
+  if (enabled) return null;
 
   return (
     <div className="mt-4 text-center">
