@@ -39,3 +39,14 @@ self.addEventListener("notificationclick", (event) => {
       })
   );
 });
+
+self.addEventListener("install", (event) => {
+  event.waitUntil(
+    caches.open("app-cache-v2").then((cache) => {
+      return cache.addAll([
+        "/",
+        "/globals.css", // garante que pega o CSS atualizado
+      ]);
+    })
+  );
+});
