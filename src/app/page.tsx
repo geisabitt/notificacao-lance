@@ -15,19 +15,19 @@ export default function Home() {
   const sendAction = async (action: string) => {
     setLoading(true);
     try {
-      alert(`Enviando ação: ${action}`); // Substitui console.log
+      console.log(`Enviando ação: ${action}`); // Substitui console.log
       const response = await fetch("/api/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       });
       if (!response.ok) {
-        alert(`Erro no fetch: ${response.status}`); // Substitui console.error
+        console.log(`Erro no fetch: ${response.status}`); // Substitui console.error
         throw new Error("Falha na requisição");
       }
-      alert("Ação enviada com sucesso"); // Substitui console.log
+      console.log("Ação enviada com sucesso"); // Substitui console.log
     } catch (error) {
-      alert(
+      console.log(
         `Erro geral no sendAction: ${
           error instanceof Error ? error.message : String(error)
         }`
@@ -40,19 +40,22 @@ export default function Home() {
   };
 
   const handleAction = (action: string) => {
-    alert(`Ação: ${action}`);
+    // Reproduz som
+    const whistle = new Audio("/campainha.mp3");
+    whistle.play().catch((err) => console.warn("Erro ao tocar som:", err));
+
+    console.log(`Ação: ${action}`);
     sendAction(action);
   };
 
-  // Comentei o Service Worker para isolar problemas
-  // useEffect(() => {
-  //   if ("serviceWorker" in navigator) {
-  //     navigator.serviceWorker
-  //       .register("/sw.js")
-  //       .then(() => alert("SW registrado"))
-  //       .catch((err) => alert("Erro ao registrar SW: " + err.message));
-  //   }
-  // }, []);
+  useEffect(() => {
+    if ("serviceWorker" in navigator) {
+      navigator.serviceWorker
+        .register("/sw.js")
+        .then(() => console.log("SW registrado"))
+        .catch((err) => console.log("Erro ao registrar SW: " + err.message));
+    }
+  }, []);
 
   return (
     <main className={styles.main}>
@@ -82,20 +85,20 @@ export default function Home() {
           </button>
           <button
             onClick={() => {
-              alert("Botão Drible clicado");
-              sendAction("Drible");
+              console.log("Botão Drible clicado");
+              handleAction("Drible");
             }}
-            onTouchStart={() => alert("Toque no botão Drible detectado")} // Novo
+            onTouchStart={() => console.log("Toque no botão Drible detectado")} // Novo
             className={`${styles.button} ${styles.dribleButton}`}
           >
             <Zap size={48} /> <span>Drible</span>
           </button>
           <button
             onClick={() => {
-              alert("Botão Lençol clicado");
-              sendAction("Lencol");
+              console.log("Botão Lençol clicado");
+              handleAction("Lencol");
             }}
-            onTouchStart={() => alert("Toque no botão Lençol detectado")} // Novo
+            onTouchStart={() => console.log("Toque no botão Lençol detectado")} // Novo
             className={`${styles.button} ${styles.lencolButton}`}
           >
             <Volleyball size={48} /> <span>Lençol</span>
@@ -107,18 +110,18 @@ export default function Home() {
 
       <button
         onClick={() => {
-          alert("Botão Admin clicado");
+          console.log("Botão Admin clicado");
           try {
             router.push("/admin");
           } catch (error) {
-            alert(
+            console.log(
               "Erro no router.push: " +
                 (error instanceof Error ? error.message : String(error))
             );
             window.location.href = "/admin";
           }
         }}
-        onTouchStart={() => alert("Toque no botão Admin detectado")} // Novo
+        onTouchStart={() => console.log("Toque no botão Admin detectado")} // Novo
         className={styles.adminButton}
         title="Área Administrativa"
       >
