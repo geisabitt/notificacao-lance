@@ -1,0 +1,138 @@
+.main {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  background-image: url(/stadium-bg.png);
+  background-position: center;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-color: #000;
+  -webkit-background-size: cover;
+}
+
+.content {
+  position: relative;
+  z-index: 10;
+  text-align: center;
+  width: 100%;
+  max-width: 28rem;
+}
+
+.logoContainer {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 800;
+  margin-bottom: 2rem;
+  letter-spacing: 0.05em;
+}
+
+.buttonContainer {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.buttonContainer > * + * {
+  margin-top: 1.5rem;
+}
+
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  padding-left: 2rem;
+  padding-right: 2rem;
+  padding-top: 1.5rem;
+  padding-bottom: 1.5rem;
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+    0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  font-size: 1.875rem;
+  font-weight: 700;
+  color: white;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  border: none; /* Evita bordas indesejadas */
+  position: relative; /* Garante interação */
+}
+
+.button > * + * {
+  margin-left: 1rem;
+}
+
+.button:hover {
+  transform: scale(1.05);
+  -webkit-transform: scale(1.05);
+}
+
+.golButton {
+  background-color: #22c55e;
+}
+
+.golButton:hover {
+  background-color: #16a34a;
+}
+
+.dribleButton {
+  background-color: #3b82f6;
+}
+
+.dribleButton:hover {
+  background-color: #2563eb;
+}
+
+.lencolButton {
+  background-color: #ef4444;
+}
+
+.lencolButton:hover {
+  background-color: #dc2626;
+}
+
+.loading {
+  margin-top: 1rem;
+  font-size: 1.125rem;
+}
+
+.adminButton {
+  position: fixed;
+  bottom: 1.5rem;
+  left: 1.5rem;
+  background-color: #111827;
+  padding: 1rem;
+  border-radius: 9999px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+    0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  z-index: 100; /* Aumentado para evitar sobreposição */
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+  cursor: pointer;
+  border: none; /* Evita bordas indesejadas */
+  color: #fff;
+}
+
+.adminButton:hover {
+  background-color: #374151;
+  transform: scale(1.1);
+  -webkit-transform: scale(1.1);
+}
+
+.button,
+.adminButton {
+  z-index: 200; /* acima de tudo */
+  cursor: pointer !important;
+  touch-action: manipulation !important;
+  -webkit-user-select: none;
+}
