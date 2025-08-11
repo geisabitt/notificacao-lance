@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { ShieldCheck, Goal, Zap, Volleyball } from "lucide-react";
 import ActionModal from "@/components/ActionModal";
 import Image from "next/image";
+import styles from "./page.module.css"; // Importando o CSS do módulo
 
 export default function Home() {
   const router = useRouter();
@@ -13,14 +14,38 @@ export default function Home() {
 
   const sendAction = async (action: string) => {
     setLoading(true);
-    await fetch("/api/events", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ action }),
-    });
-    setLoading(false);
-    setModalMessage(`Ação ${action} registrada!`);
-    setShowModal(true);
+    try {
+      console.log(`Enviando ação: ${action}`); // Substitui console.log
+      const response = await fetch("/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      if (!response.ok) {
+        console.log(`Erro no fetch: ${response.status}`); // Substitui console.error
+        throw new Error("Falha na requisição");
+      }
+      console.log("Ação enviada com sucesso"); // Substitui console.log
+    } catch (error) {
+      console.log(
+        `Erro geral no sendAction: ${
+          error instanceof Error ? error.message : String(error)
+        }`
+      ); // Substitui console.error
+    } finally {
+      setLoading(false);
+      setModalMessage(`Ação ${action} registrada!`);
+      setShowModal(true);
+    }
+  };
+
+  const handleAction = (action: string) => {
+    // Reproduz som
+    const whistle = new Audio("/campainha.mp3");
+    whistle.play().catch((err) => console.warn("Erro ao tocar som:", err));
+
+    console.log(`Ação: ${action}`);
+    sendAction(action);
   };
 
   useEffect(() => {
@@ -28,25 +53,16 @@ export default function Home() {
       navigator.serviceWorker
         .register("/sw.js")
         .then(() => console.log("SW registrado"))
-        .catch((err) => console.error("Erro ao registrar SW:", err));
+        .catch((err) => console.log("Erro ao registrar SW: " + err.message));
     }
   }, []);
 
   return (
-    <main
-      className="relative min-h-screen flex flex-col items-center justify-center text-white px-4"
-      style={{
-        backgroundImage: "url(/stadium-bg.png)",
-        backgroundPosition: "center",
-        backgroundSize: "cover",
-        backgroundRepeat: "no-repeat",
-        backgroundColor: "#000", // fallback para browsers antigos
-      }}
-    >
-      <div className="absolute inset-0"></div>
-
-      <div className="relative z-10 text-center w-full max-w-md">
-        <div className="flex justify-center mb-8">
+    <main className={styles.main}>
+      {/* Overlay comentado para evitar bloqueio */}
+      {/* <div className={styles.overlay}></div> */}
+      <div className={styles.content}>
+        <div className={styles.logoContainer}>
           <Image
             src="/logo-sitio-khalifa.png"
             alt="Logo do Projeto"
@@ -57,38 +73,56 @@ export default function Home() {
           />
         </div>
 
-        <h1 className="text-4xl font-extrabold mb-8 tracking-wide">
-          Gol ⚽ Lances
-        </h1>
+        <h1 className={styles.title}>Gol ⚽ Lances</h1>
 
-        {/* Usando space-y para compatibilidade com navegadores antigos */}
-        <div className="flex flex-col space-y-6 justify-center">
+        <div className={styles.buttonContainer}>
           <button
-            onClick={() => sendAction("Gol")}
-            className="flex items-center justify-center space-x-4 bg-green-500 hover:bg-green-600 text-white rounded-full px-8 py-6 shadow-xl transition-transform duration-200 transform hover:scale-105 text-3xl font-bold"
+            onTouchEnd={() => handleAction("Gol")}
+            onClick={() => handleAction("Gol")}
+            className={`${styles.button} ${styles.golButton}`}
           >
             <Goal size={48} /> <span>Gol</span>
           </button>
           <button
-            onClick={() => sendAction("Drible")}
-            className="flex items-center justify-center space-x-4 bg-blue-500 hover:bg-blue-600 text-white rounded-full px-8 py-6 shadow-xl transition-transform duration-200 transform hover:scale-105 text-3xl font-bold"
+            onClick={() => {
+              console.log("Botão Drible clicado");
+              handleAction("Drible");
+            }}
+            onTouchStart={() => console.log("Toque no botão Drible detectado")} // Novo
+            className={`${styles.button} ${styles.dribleButton}`}
           >
             <Zap size={48} /> <span>Drible</span>
           </button>
           <button
-            onClick={() => sendAction("Lencol")}
-            className="flex items-center justify-center space-x-4 bg-red-500 hover:bg-red-600 text-white rounded-full px-8 py-6 shadow-xl transition-transform duration-200 transform hover:scale-105 text-3xl font-bold"
+            onClick={() => {
+              console.log("Botão Lençol clicado");
+              handleAction("Lencol");
+            }}
+            onTouchStart={() => console.log("Toque no botão Lençol detectado")} // Novo
+            className={`${styles.button} ${styles.lencolButton}`}
           >
             <Volleyball size={48} /> <span>Lençol</span>
           </button>
         </div>
 
-        {loading && <p className="mt-4 text-lg">Enviando...</p>}
+        {loading && <p className={styles.loading}>Enviando...</p>}
       </div>
 
       <button
-        onClick={() => router.push("/admin")}
-        className="fixed bottom-6 left-6 bg-gray-900 p-4 rounded-full shadow-lg hover:bg-gray-700 transition-transform duration-200 transform hover:scale-110 z-20"
+        onClick={() => {
+          console.log("Botão Admin clicado");
+          try {
+            router.push("/admin");
+          } catch (error) {
+            console.log(
+              "Erro no router.push: " +
+                (error instanceof Error ? error.message : String(error))
+            );
+            window.location.href = "/admin";
+          }
+        }}
+        onTouchStart={() => console.log("Toque no botão Admin detectado")} // Novo
+        className={styles.adminButton}
         title="Área Administrativa"
       >
         <ShieldCheck size={28} />
