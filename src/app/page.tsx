@@ -52,8 +52,12 @@ export default function Home() {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/sw.js")
-        .then(() => console.log("SW registrado"))
-        .catch((err) => console.log("Erro ao registrar SW: " + err.message));
+        .then(() => {
+          /* service worker registrado */
+        })
+        .catch(() => {
+          /* falha ao registrar service worker - não bloquear a UI */
+        });
     }
   }, []);
 
