@@ -2,6 +2,9 @@ import { prisma } from "@/lib/prisma";
 import webPush from "web-push";
 import { NextResponse } from "next/server";
 
+// tipo local mínimo para as subscriptions retornadas pelo Prisma
+type Sub = { endpoint: string; p256dh: string; auth: string };
+
 webPush.setVapidDetails(
   process.env.VAPID_EMAIL!,
   process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY!,
@@ -23,7 +26,7 @@ export async function POST(req: Request) {
     const payload = JSON.stringify({ title, body: message });
 
     await Promise.all(
-      subs.map(async (sub) => {
+      subs.map(async (sub: Sub) => {
         const pushSub = {
           endpoint: sub.endpoint,
           keys: {
@@ -38,12 +41,12 @@ export async function POST(req: Request) {
           if (typeof err === "object" && err && "statusCode" in err) {
             const errorObj = err as { statusCode?: number };
             console.error("Erro ao enviar push:", errorObj.statusCode);
-            if (errorObj.statusCode === 410 || errorObj.statusCode === 404) {
-              await prisma.notificationSubscription.delete({
-                where: { endpoint: sub.endpoint },
-              });
-              console.log("Inscrição removida:", sub.endpoint);
-            }
+                if (errorObj.statusCode === 410 || errorObj.statusCode === 404) {
+                  await prisma.notificationSubscription.delete({
+                    where: { endpoint: sub.endpoint },
+                  });
+                  // inscrição inválida removida
+                }
           } else {
             console.error("Erro ao enviar push:", err);
           }

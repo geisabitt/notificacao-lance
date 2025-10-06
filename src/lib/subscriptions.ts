@@ -7,9 +7,9 @@ export function addSubscription(sub: WebPushSubscription) {
   const exists = subscriptions.find((s) => s.endpoint === sub.endpoint);
   if (!exists) {
     subscriptions.push(sub);
-    console.log("Nova inscrição adicionada:", sub.endpoint);
+    // nova inscricao adicionada
   } else {
-    console.log("Inscrição já existe:", sub.endpoint);
+    // inscricao já existe
   }
 }
 
@@ -21,6 +21,6 @@ export function removeSubscription(endpoint: string) {
   const index = subscriptions.findIndex((s) => s.endpoint === endpoint);
   if (index !== -1) {
     subscriptions.splice(index, 1);
-    console.log("Inscrição removida:", endpoint);
+    // inscricao removida
   }
 }
