@@ -15,23 +15,19 @@ export default function Home() {
   const sendAction = async (action: string) => {
     setLoading(true);
     try {
-      console.log(`Enviando ação: ${action}`); // Substitui console.log
+      // send action to server
       const response = await fetch("/api/events", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ action }),
       });
       if (!response.ok) {
-        console.log(`Erro no fetch: ${response.status}`); // Substitui console.error
+        // handle error status
         throw new Error("Falha na requisição");
       }
-      console.log("Ação enviada com sucesso"); // Substitui console.log
+      // sucesso
     } catch (error) {
-      console.log(
-        `Erro geral no sendAction: ${
-          error instanceof Error ? error.message : String(error)
-        }`
-      ); // Substitui console.error
+      // opcional: tratar erro (poderíamos mostrar um modal de erro)
     } finally {
       setLoading(false);
       setModalMessage(`Ação ${action} registrada!`);
@@ -40,11 +36,15 @@ export default function Home() {
   };
 
   const handleAction = (action: string) => {
-    // Reproduz som
-    const whistle = new Audio("/campainha.mp3");
-    whistle.play().catch((err) => console.warn("Erro ao tocar som:", err));
+    // prevenimos envios duplicados enquanto já estiver enviando
+    if (loading) return;
 
-    console.log(`Ação: ${action}`);
+    // Reproduz som (não bloqueante)
+    const whistle = new Audio("/campainha.mp3");
+    void whistle.play().catch(() => {
+      /* ignorar erro de autoplay */
+    });
+
     sendAction(action);
   };
 
@@ -52,8 +52,12 @@ export default function Home() {
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker
         .register("/sw.js")
-        .then(() => console.log("SW registrado"))
-        .catch((err) => console.log("Erro ao registrar SW: " + err.message));
+        .then(() => {
+          /* service worker registrado */
+        })
+        .catch(() => {
+          /* falha ao registrar service worker - não bloquear a UI */
+        });
     }
   }, []);
 
@@ -77,28 +81,22 @@ export default function Home() {
 
         <div className={styles.buttonContainer}>
           <button
-            onTouchEnd={() => handleAction("Gol")}
             onClick={() => handleAction("Gol")}
+            disabled={loading}
             className={`${styles.button} ${styles.golButton}`}
           >
             <Goal size={48} /> <span>Gol</span>
           </button>
           <button
-            onClick={() => {
-              console.log("Botão Drible clicado");
-              handleAction("Drible");
-            }}
-            onTouchStart={() => console.log("Toque no botão Drible detectado")} // Novo
+            onClick={() => handleAction("Drible")}
+            disabled={loading}
             className={`${styles.button} ${styles.dribleButton}`}
           >
             <Zap size={48} /> <span>Drible</span>
           </button>
           <button
-            onClick={() => {
-              console.log("Botão Lençol clicado");
-              handleAction("Lencol");
-            }}
-            onTouchStart={() => console.log("Toque no botão Lençol detectado")} // Novo
+            onClick={() => handleAction("Lencol")}
+            disabled={loading}
             className={`${styles.button} ${styles.lencolButton}`}
           >
             <Volleyball size={48} /> <span>Lençol</span>
@@ -110,18 +108,12 @@ export default function Home() {
 
       <button
         onClick={() => {
-          console.log("Botão Admin clicado");
           try {
             router.push("/admin");
-          } catch (error) {
-            console.log(
-              "Erro no router.push: " +
-                (error instanceof Error ? error.message : String(error))
-            );
+          } catch {
             window.location.href = "/admin";
           }
         }}
-        onTouchStart={() => console.log("Toque no botão Admin detectado")} // Novo
         className={styles.adminButton}
         title="Área Administrativa"
       >

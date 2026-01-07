@@ -38,16 +38,19 @@ export default function EnableNotifications() {
       ),
     });
 
-    console.log("Nova inscrição:", subscription);
+    setStatus("Enviando inscrição ao servidor...");
 
-    await fetch("/api/push/subscribe", {
+    try {
+      await fetch("/api/push/subscribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(subscription),
-    });
-
-    setEnabled(true);
-    setStatus("Notificações ativadas!");
+      });
+      setEnabled(true);
+      setStatus("Notificações ativadas!");
+    } catch (err) {
+      setStatus("Erro ao ativar notificações");
+    }
   };
 
   function urlBase64ToUint8Array(base64String: string) {
